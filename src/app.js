@@ -83,7 +83,6 @@ function sortAndShowChanges() {
 
   function selectionSortWithChanges(cards) {
     const n = cards.length;
-    const changes = []; // Array para almacenar los cambios
 
     for (let i = 0; i < n - 1; i++) {
       let min = i;
@@ -95,32 +94,17 @@ function sortAndShowChanges() {
       }
 
       if (min !== i) {
-        // Guardar los cambios: tarjeta en posición i intercambiada con tarjeta en posición min
-        changes.push({ from: i, to: min });
         const temp = cards[i].innerHTML;
         cards[i].innerHTML = cards[min].innerHTML;
         cards[min].innerHTML = temp;
       }
     }
-
-    return changes; // Devolver el array de cambios
   }
 
-  const cambiosDificiles = selectionSortWithChanges(cards);
+  selectionSortWithChanges(cards);
 
-  cambiosDificiles.forEach((cambio, index) => {
-    const cambioDiv = document.createElement("div");
-    cambioDiv.textContent = `Cambio ${index + 1}: Mover carta desde posición ${
-      cambio.from
-    } a posición ${cambio.to}`;
-    cambiosDificilesContainer.appendChild(cambioDiv);
-  });
-
-  // Agregar las cartas al registro
-  const cartasDiv = document.createElement("div");
-  cartasDiv.classList.add("registro-cartas");
+  // Agregar las cartas al registro horizontal
   cards.forEach(card => {
-    cartasDiv.appendChild(card.cloneNode(true));
+    cambiosDificilesContainer.appendChild(card.cloneNode(true));
   });
-  cambiosDificilesContainer.appendChild(cartasDiv);
 }

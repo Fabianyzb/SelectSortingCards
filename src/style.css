@@ -62,5 +62,5 @@ body {
 .registro-cartas {
   display: flex;
   flex-wrap: wrap;
-  margin-top: 20px; /* Espacio entre el registro y las cartas */
+  justify-content: center;
 }
