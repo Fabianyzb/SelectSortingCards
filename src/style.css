@@ -64,3 +64,13 @@ body {
   flex-wrap: wrap;
   justify-content: center;
 }
+
+.registro-cartas span {
+  font-size: 18px;
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+.registro-cartas .card {
+  margin-right: 5px;
+}
