@@ -12,34 +12,17 @@ window.onload = () => {
 };
 
 let generateRandomNumber = () => {
-  let numbers = [
-    "A",
-    "2",
-    "3",
-    "4",
-    "5",
-    "6",
-    "7",
-    "8",
-    "9",
-    "0",
-    "J",
-    "Q",
-    "K"
-  ];
+  let numbers = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
   let indexNumbers = Math.floor(Math.random() * numbers.length);
   return numbers[indexNumbers];
 };
 
-// generar simbolo aleatorio
 let generateRandomSuit = () => {
   let suit = ["diamond", "spade", "heart", "club"];
-  // SELECCIONAR SIMBOLO
   let indexSuit = Math.floor(Math.random() * suit.length);
   return suit[indexSuit];
 };
 
-// convertir valores de cartas
 function convertCardValue(value) {
   switch (value) {
     case "1":
@@ -55,7 +38,21 @@ function convertCardValue(value) {
   }
 }
 
-// func para generar cartas aleatorias y mostrarlas en el contenedor
+function getValue(cardValue) {
+  switch (cardValue) {
+    case "A":
+      return 1;
+    case "J":
+      return 11;
+    case "Q":
+      return 12;
+    case "K":
+      return 13;
+    default:
+      return parseInt(cardValue, 10);
+  }
+}
+
 let generateRandomCards = () => {
   const numCards = parseInt(document.getElementById("num-cards").value, 10);
   const cardContainer = document.getElementById("card-container");
@@ -66,12 +63,11 @@ let generateRandomCards = () => {
     card.classList.add("card");
     card.classList.add(generateRandomSuit());
     const randomNumber = generateRandomNumber();
-    card.innerHTML = convertCardValue(randomNumber); // Aplicar la conversión
+    card.innerHTML = convertCardValue(randomNumber);
     cardContainer.appendChild(card);
   }
 };
 
-// func para ordenar las cartas usando el algoritmo de selección y mostrar los cambios
 function sortAndShowChanges() {
   const cardsContainer = document.getElementById("card-container");
   const cards = Array.from(cardsContainer.querySelectorAll(".card"));
@@ -79,7 +75,7 @@ function sortAndShowChanges() {
     "cambios-dificiles-container"
   );
 
-  cambiosDificilesContainer.innerHTML = ""; // Limpia registro
+  cambiosDificilesContainer.innerHTML = "";
 
   function selectionSortWithChanges(cards) {
     const n = cards.length;
@@ -89,7 +85,10 @@ function sortAndShowChanges() {
       let min = i;
 
       for (let j = i + 1; j < n; j++) {
-        if (cards[j].innerHTML < cards[min].innerHTML) {
+        const valueI = getValue(cards[i].innerHTML);
+        const valueJ = getValue(cards[j].innerHTML);
+
+        if (valueJ > valueI) {
           min = j;
         }
       }
@@ -99,19 +98,16 @@ function sortAndShowChanges() {
         cards[i].innerHTML = cards[min].innerHTML;
         cards[min].innerHTML = temp;
 
-        // Clonar cartas para mostrar etapas
-        const clonedCards = cards.map(card => card.cloneNode(true));
+        const clonedCards = cards.map((card) => card.cloneNode(true));
 
-        // Agregar el número de etapa y las cartas al registro horizontal
         step++;
         const stepLabel = document.createElement("span");
         stepLabel.innerText = `PASO ${step}: `;
         cambiosDificilesContainer.appendChild(stepLabel);
-        clonedCards.forEach(clonedCard => {
+        clonedCards.forEach((clonedCard) => {
           cambiosDificilesContainer.appendChild(clonedCard);
         });
 
-        //SEPARADOR
         const separator = document.createElement("span");
         separator.innerText = " | ";
         cambiosDificilesContainer.appendChild(separator);
