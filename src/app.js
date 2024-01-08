@@ -1,6 +1,9 @@
 import "bootstrap";
 import "./style.css";
 
+// Declarar generatedCards en un alcance más amplio
+let generatedCards = [];
+
 window.onload = () => {
   document
     .getElementById("generate-btn")
@@ -58,62 +61,93 @@ let generateRandomCards = () => {
   const cardContainer = document.getElementById("card-container");
   cardContainer.innerHTML = "";
 
+  // Generar y almacenar las cartas aleatorias en una variable
+  generatedCards = [];
   for (let i = 0; i < numCards; i++) {
     const card = document.createElement("div");
     card.classList.add("card");
-    card.classList.add(generateRandomSuit());
+    const randomSuit = generateRandomSuit();
+    card.classList.add(randomSuit);
     const randomNumber = generateRandomNumber();
     card.innerHTML = convertCardValue(randomNumber);
     cardContainer.appendChild(card);
+    generatedCards.push({ value: randomNumber, suit: randomSuit });
   }
+
+  // Almacenar las cartas generadas en el contenedor (sin ordenar)
+  cardContainer.innerHTML = "";
+  generatedCards.forEach(card => {
+    const clonedCard = document.createElement("div");
+    clonedCard.classList.add("card");
+    clonedCard.classList.add(card.suit);
+    clonedCard.innerHTML = convertCardValue(card.value);
+    cardContainer.appendChild(clonedCard);
+  });
 };
 
 function sortAndShowChanges() {
   const cardsContainer = document.getElementById("card-container");
   const cards = Array.from(cardsContainer.querySelectorAll(".card"));
+
+  // Declarar cambiosDificilesContainer antes de su uso
   const cambiosDificilesContainer = document.getElementById(
     "cambios-dificiles-container"
   );
 
   cambiosDificilesContainer.innerHTML = "";
 
-  function selectionSortWithChanges(cards) {
-    const n = cards.length;
-    let step = 0;
+  // Ordenar una copia de las cartas, manteniendo las originales sin cambios
+  const cardsCopy = generatedCards.map(card => ({
+    value: card.value,
+    suit: card.suit
+  }));
+  selectionSortWithChanges(cardsCopy, cambiosDificilesContainer);
+}
 
-    for (let i = 0; i < n - 1; i++) {
-      let min = i;
+function selectionSortWithChanges(cards, cambiosDificilesContainer) {
+  const n = cards.length;
+  let step = 0;
 
-      for (let j = i + 1; j < n; j++) {
-        const valueI = getValue(cards[i].innerHTML);
-        const valueJ = getValue(cards[j].innerHTML);
+  for (let i = 0; i < n - 1; i++) {
+    let min = i;
 
-        if (valueJ > valueI) {
-          min = j;
-        }
-      }
+    for (let j = i + 1; j < n; j++) {
+      const valueI = getValue(cards[min].value);
+      const valueJ = getValue(cards[j].value);
 
-      if (min !== i) {
-        const temp = cards[i].innerHTML;
-        cards[i].innerHTML = cards[min].innerHTML;
-        cards[min].innerHTML = temp;
-
-        const clonedCards = cards.map((card) => card.cloneNode(true));
-
-        step++;
-        const stepLabel = document.createElement("span");
-        stepLabel.innerText = `PASO ${step}: `;
-        cambiosDificilesContainer.appendChild(stepLabel);
-        clonedCards.forEach((clonedCard) => {
-          cambiosDificilesContainer.appendChild(clonedCard);
-        });
-
-        const separator = document.createElement("span");
-        separator.innerText = " | ";
-        cambiosDificilesContainer.appendChild(separator);
+      if (valueJ < valueI) {
+        min = j;
       }
     }
-  }
 
-  selectionSortWithChanges(cards);
+    if (min !== i) {
+      const tempValue = cards[i].value;
+      const tempSuit = cards[i].suit;
+      cards[i].value = cards[min].value;
+      cards[i].suit = cards[min].suit;
+      cards[min].value = tempValue;
+      cards[min].suit = tempSuit;
+
+      const clonedCards = cards.map(card => ({
+        value: card.value,
+        suit: card.suit
+      }));
+
+      step++;
+      const stepLabel = document.createElement("span");
+      stepLabel.innerText = `PASO ${step}: `;
+      cambiosDificilesContainer.appendChild(stepLabel);
+      clonedCards.forEach(clonedCard => {
+        const cardElement = document.createElement("div");
+        cardElement.classList.add("card");
+        cardElement.classList.add(clonedCard.suit);
+        cardElement.innerHTML = convertCardValue(clonedCard.value);
+        cambiosDificilesContainer.appendChild(cardElement);
+      });
+
+      const separator = document.createElement("span");
+      separator.innerText = " | ";
+      cambiosDificilesContainer.appendChild(separator);
+    }
+  }
 }
